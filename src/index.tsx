@@ -33,6 +33,14 @@ export function Home() {
     ])
   }
 
+  function handleRemoveParticipant(participantId: number) {
+    const filteredParticipantsArray = participants.filter(
+      (participant) => participant.id !== participantId,
+    )
+
+    setParticipants(filteredParticipantsArray)
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.eventName}>Evento qualquer</Text>
@@ -76,7 +84,10 @@ export function Home() {
             <View style={styles.participant}>
               <Text style={{ color: '#fff', fontSize: 16 }}>{item.name}</Text>
             </View>
-            <TouchableOpacity style={styles.removeParticipantButton}>
+            <TouchableOpacity
+              onPress={() => handleRemoveParticipant(item.id)}
+              style={styles.removeParticipantButton}
+            >
               <Text style={styles.addButtonIcon}>-</Text>
             </TouchableOpacity>
           </View>
