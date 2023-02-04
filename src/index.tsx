@@ -1,5 +1,6 @@
 import {
-  ScrollView,
+  Alert,
+  FlatList,
   StyleSheet,
   Text,
   TextInput,
@@ -7,8 +8,31 @@ import {
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useState } from 'react'
 
 export function Home() {
+  const [inputText, setInputText] = useState('')
+  const [participants, setParticipants] = useState<
+    {
+      name: string
+      id: number
+    }[]
+  >([])
+
+  function handleAddNewParticipant() {
+    if (!inputText) {
+      return Alert.alert('Atenção', 'É preciso digitar o nome do participante')
+    }
+
+    setParticipants((prevState) => [
+      ...prevState,
+      {
+        name: inputText,
+        id: Date.now(),
+      },
+    ])
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.eventName}>Evento qualquer</Text>
@@ -16,40 +40,48 @@ export function Home() {
 
       <View style={styles.inputContainer}>
         <TextInput
+          onChangeText={setInputText}
           style={styles.input}
           placeholderTextColor="#6B6B6B"
           placeholder="Nome do participante"
         />
-        <TouchableOpacity style={styles.addButton}>
+        <TouchableOpacity
+          onPress={handleAddNewParticipant}
+          style={styles.addButton}
+        >
           <Text style={styles.addButtonIcon}>+</Text>
         </TouchableOpacity>
       </View>
 
       <Text style={styles.listTitle}>Participantes</Text>
-
-      <ScrollView style={{ marginTop: 16 }}>
-        {/* <Text style={styles.emptyMessage}>
-          Ninguém chegou no evento ainda? {'\n'}
-          Adicione participantes a sua lista de presença.
-        </Text> */}
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 10,
-          }}
-        >
-          <View style={styles.participant}>
-            <Text style={{ color: '#fff', fontSize: 16 }}>
-              Guilherme Victor
-            </Text>
+      <FlatList
+        style={{ marginTop: 16 }}
+        ListEmptyComponent={() => (
+          <Text style={styles.emptyMessage}>
+            Ninguém chegou no evento ainda? {'\n'}
+            Adicione participantes a sua lista de presença.
+          </Text>
+        )}
+        data={participants}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item }) => (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 10,
+            }}
+          >
+            <View style={styles.participant}>
+              <Text style={{ color: '#fff', fontSize: 16 }}>{item.name}</Text>
+            </View>
+            <TouchableOpacity style={styles.removeParticipantButton}>
+              <Text style={styles.addButtonIcon}>-</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.removeParticipantButton}>
-            <Text style={styles.addButtonIcon}>-</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+        )}
+      />
     </SafeAreaView>
   )
 }
